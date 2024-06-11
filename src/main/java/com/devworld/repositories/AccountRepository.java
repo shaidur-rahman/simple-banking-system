@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.devworld.models.Account;
@@ -14,6 +14,7 @@ public class AccountRepository {
     private static final String INSERT_ACCOUNT_SQL = "INSERT INTO accounts (account_holder_name, balance) VALUES (?, ?)";
     private static final String UPDATE_ACCOUNT_SQL = "UPDATE accounts SET account_holder_name = ?, balance = ? WHERE account_id = ?";
     private static final String SELECT_ACCOUNT_BY_ID_SQL = "SELECT * FROM accounts WHERE account_id = ?";
+    private static final String SELECT_ALL_ACCOUNT_SQL = "SELECT * FROM accounts";
 
     // Create account
 	public int createAccount(Account account) throws SQLException {
@@ -47,13 +48,20 @@ public class AccountRepository {
 		}
 	}
 
+	public List<Account> getAllAccountDetails() throws SQLException {
+		try (Connection connection = JDBCUtils.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_ACCOUNT_SQL)) {
+			return mapResultSetToAccount(preparedStatement.executeQuery());
+		}
+	}
+
 	private List<Account> mapResultSetToAccount(ResultSet rs) throws SQLException {
-		List<Account> accounts = Collections.emptyList();
+		List<Account> accounts = new LinkedList<Account>();
 		if (rs == null) return accounts;
 		while (rs.next()) {
 			Account account = new Account();
 			account.setAccount_id(rs.getInt("account_id"));
-			account.setAccountHolderName(rs.getString("account_id"));
+			account.setAccountHolderName(rs.getString("account_holder_name"));
 			account.setBalance(rs.getDouble("balance"));
 			accounts.add(account);
 		}

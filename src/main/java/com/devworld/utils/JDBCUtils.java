@@ -6,6 +6,11 @@ import java.sql.SQLException;
 
 public class JDBCUtils {
 	private static Connection connection;
+	private static String HOST;
+	private static String PORT;
+	private static String DB;
+	private static String USER;
+	private static String PASS;
 
 	// Preventing object instantiation in-order to provide same connection all over the application
 	private JDBCUtils() {
@@ -20,12 +25,21 @@ public class JDBCUtils {
 		}
 	}
 
-	public synchronized static void initialize(String host, String port, String db, String userName, String pass) {
+	public static void initialize(String host, String port, String db, String userName, String pass) {
+		HOST = host;
+		PORT = port;
+		DB = db;
+		USER = userName;
+		PASS = pass;
+		connect();
+	}
+
+	private static void connect() {
 		try {
 			if (connection != null && !connection.isClosed()) return;
 			registerDriver();
 			System.out.println("Creating database connection...");
-			connection = DriverManager.getConnection(String.format("jdbc:postgresql://%s:%s/%s", host, port, db), userName, pass);
+			connection = DriverManager.getConnection(String.format("jdbc:postgresql://%s:%s/%s", HOST, PORT, DB), USER, PASS);
 			System.out.println("Database connected!");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -43,6 +57,7 @@ public class JDBCUtils {
 	}
 
 	public static Connection getConnection() {
+		connect();
 		return connection;
 	}
 }

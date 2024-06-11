@@ -7,7 +7,6 @@ import java.util.Map;
 import com.devworld.models.Account;
 import com.devworld.models.Transaction;
 import com.devworld.utils.BeansFactory;
-import com.devworld.utils.JDBCUtils;
 
 public class TransactionService extends BeansFactory {
 
@@ -18,23 +17,11 @@ public class TransactionService extends BeansFactory {
 
 		try {
 			validateTransaction(transaction, transferAccount);
-			JDBCUtils.getConnection().setAutoCommit(false);
 			// start initiating the transaction
 			initiateTransaction(transaction, transferAccount);
-			JDBCUtils.getConnection().commit();
 		} catch (Exception e) {
-			try {
-				JDBCUtils.getConnection().rollback();
-			} catch (SQLException ignore) {
-			}
 			response.put("status", "error");
 			response.put("message", String.format("Transaction failed, issue: %s", e.getMessage()));
-		} finally {
-			try {
-				JDBCUtils.getConnection().setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 
 		return response;
@@ -45,7 +32,7 @@ public class TransactionService extends BeansFactory {
 		if (transaction.getTransactionType() == null) throw new Exception("Transaction type should not be null!");
 
 		// check whether negative amount is provided
-		if ((transaction.getAmount() * -1) < 0)  throw new Exception("Nagative amount transaction not allowed!");
+		if ((transaction.getAmount() * 1) < 0)  throw new Exception("Nagative amount transaction not allowed!");
 
 		Account accountDetails = accountRepository.getAccountDetailsById(transaction.getAccountId());
 		if (accountDetails == null) throw new Exception("Invalid account id: " + transaction.getAccountId());

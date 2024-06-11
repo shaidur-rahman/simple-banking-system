@@ -52,4 +52,10 @@ public class Transaction {
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
+
+	@Override
+	public String toString() {
+		return "Transaction [transactionId=" + transactionId + ", accountId=" + accountId + ", transactionType="
+				+ transactionType + ", amount=" + amount + ", timestamp=" + timestamp + "]";
+	}
 }

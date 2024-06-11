@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.devworld.models.Transaction;
@@ -40,7 +40,7 @@ public class TransactionRepository {
 		}
 
 		private List<Transaction> mapResultSetToTransaction(ResultSet rs) throws SQLException {
-			List<Transaction> transactions = Collections.emptyList();
+			List<Transaction> transactions = new LinkedList<Transaction>();
 			if (rs == null) return transactions;
 			while (rs.next()) {
 				Transaction transaction = new Transaction();
